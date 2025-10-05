@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Admin Login - Helpdesk</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: linear-gradient(135deg, #2193b0, #6dd5ed); min-height: 100vh; }
+        .card {
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            animation: fadeIn 1.2s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .login-icons {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            margin-bottom: 24px;
+        }
+        .login-icon {
+            width: 64px;
+            height: 64px;
+        }
+        .navbar { background: #2193b0; }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="home.html">Helpdesk</a>
+    </div>
+</nav>
+<div class="container d-flex align-items-center justify-content-center" style="min-height: 100vh;">
+    <div class="row justify-content-center w-100">
+        <div class="col-md-6">
+            <div class="card p-5 rounded-4 shadow-lg">
+                <div class="login-icons">
+                    <img src="https://cdn-icons-png.flaticon.com/512/1828/1828640.png" alt="Admin" class="login-icon" title="Admin Login">
+                </div>
+                <div class="text-center mb-4">
+                    <h2 class="mt-2">Admin Login</h2>
+                    <p class="text-muted">Enter your credentials</p>
+                </div>
+                <form id="adminLoginForm">
+                    <label class="form-label">Admin ID</label>
+                    <input type="text" class="form-control mb-3" placeholder="Enter Admin ID" name="adminId" required>
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-control mb-3" placeholder="Enter Password" name="password" required>
+                    <button class="btn btn-primary w-100 py-2">Login</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+document.getElementById('adminLoginForm').onsubmit = function(e) {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.target));
+    if (data.adminId === '1111' && data.password === '1111') {
+        alert('Login successful! Redirecting to admin dashboard...');
+        window.location.href = 'admin_dashboard.html';
+    } else {
+        alert('Incorrect Admin ID or Password.');
+    }
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Staff/Admin Login</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background: #f8f9fa; }
+    .login-container { max-width: 400px; margin: 60px auto; }
+    .toggle-btns { display: flex; justify-content: center; gap: 20px; margin-bottom: 30px; }
+    .toggle-btns .btn { width: 120px; }
+    .login-form { display: none; }
+    .login-form.active { display: block; }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="toggle-btns">
+      <button class="btn btn-warning" id="showStaffLogin">Staff</button>
+      <button class="btn btn-danger" id="showAdminLogin">Admin</button>
+    </div>
+    <div id="staffLoginForm" class="login-form active">
+      <h4 class="mb-3">Staff Login</h4>
+      <form id="staffLogin">
+        <div class="mb-3">
+          <label for="staffId" class="form-label">Staff ID</label>
+          <input type="text" class="form-control" id="staffId" required>
+        </div>
+        <div class="mb-3">
+          <label for="staffPassword" class="form-label">Password</label>
+          <input type="password" class="form-control" id="staffPassword" required>
+        </div>
+        <button type="submit" class="btn btn-warning w-100">Login</button>
+      </form>
+    </div>
+    <div id="adminLoginForm" class="login-form">
+      <h4 class="mb-3">Admin Login</h4>
+      <form id="adminLogin">
+        <div class="mb-3">
+          <label for="adminId" class="form-label">Admin ID</label>
+          <input type="text" class="form-control" id="adminId" required>
+        </div>
+        <div class="mb-3">
+          <label for="adminPassword" class="form-label">Password</label>
+          <input type="password" class="form-control" id="adminPassword" required>
+        </div>
+        <button type="submit" class="btn btn-danger w-100">Login</button>
+      </form>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.getElementById('showStaffLogin').onclick = function() {
+      document.getElementById('staffLoginForm').classList.add('active');
+      document.getElementById('adminLoginForm').classList.remove('active');
+    };
+    document.getElementById('showAdminLogin').onclick = function() {
+      document.getElementById('adminLoginForm').classList.add('active');
+      document.getElementById('staffLoginForm').classList.remove('active');
+    };
+    document.getElementById('staffLogin').onsubmit = function(e) {
+      e.preventDefault();
+      let staffId = document.getElementById('staffId').value;
+      let staffPassword = document.getElementById('staffPassword').value;
+      let staffList = JSON.parse(localStorage.getItem('helpdesk_staff') || '[]');
+      let staff = staffList.find(s => s.id === staffId && s.password === staffPassword);
+      if (staff) {
+        localStorage.setItem('current_staff', JSON.stringify(staff));
+        window.location.href = 'staff_dashboard.html';
+      } else {
+        alert('Invalid Staff ID or Password!');
+      }
+    };
+    document.getElementById('adminLogin').onsubmit = function(e) {
+      e.preventDefault();
+      let adminId = document.getElementById('adminId').value;
+      let adminPassword = document.getElementById('adminPassword').value;
+      let adminList = JSON.parse(localStorage.getItem('helpdesk_admins') || '[]');
+      let admin = adminList.find(a => a.id === adminId && a.password === adminPassword);
+      if (admin) {
+        localStorage.setItem('current_admin', JSON.stringify(admin));
+        window.location.href = 'admin_dashboard.html';
+      } else {
+        alert('Invalid Admin ID or Password!');
+      }
+    };
+  </script>
+</body>
+</html>

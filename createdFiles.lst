@@ -1,0 +1,7 @@
+com\helpdesk\controller\IssueController.class
+com\helpdesk\controller\AuthController.class
+com\helpdesk\repository\UserRepository.class
+com\helpdesk\model\Issue.class
+com\helpdesk\repository\IssueRepository.class
+com\helpdesk\HelpdeskApplication.class
+com\helpdesk\model\User.class

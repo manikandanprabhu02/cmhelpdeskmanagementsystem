@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Dashboard - Helpdesk Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: linear-gradient(135deg, #f7971e, #ffd200); min-height: 100vh; }
+        .card { box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37); }
+        .navbar { background: #f7971e; }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Helpdesk Dashboard</a>
+    </div>
+</nav>
+<div class="container mt-5">
+    <div id="dashboardContent"></div>
+</div>
+<script>
+const urlParams = new URLSearchParams(window.location.search);
+const role = urlParams.get('role');
+
+function renderUserDashboard() {
+    document.getElementById('dashboardContent').innerHTML = `
+        <div class="card p-4 mb-4">
+            <h3>Submit a New Issue</h3>
+            <form id="issueForm">
+                <input type="text" class="form-control mb-2" placeholder="Issue Description" name="description" required>
+                <button class="btn btn-warning w-100">Submit Issue</button>
+            </form>
+        </div>
+        <div class="card p-4">
+            <h3>Your Issues</h3>
+            <ul id="userIssues" class="list-group"></ul>
+        </div>
+    `;
+    fetch('/api/issues').then(res => res.json()).then(issues => {
+        const list = document.getElementById('userIssues');
+        list.innerHTML = issues.map(i => `<li class="list-group-item">${i.description} - <b>${i.status}</b></li>`).join('');
+    });
+    document.getElementById('issueForm').onsubmit = async function(e) {
+        e.preventDefault();
+        const data = Object.fromEntries(new FormData(e.target));
+        await fetch('/api/issues', {
+            method: 'POST', headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
+        location.reload();
+    };
+}
+
+function renderStaffDashboard() {
+    document.getElementById('dashboardContent').innerHTML = `
+        <div class="card p-4">
+            <h3>Open Issues</h3>
+            <ul id="staffIssues" class="list-group"></ul>
+        </div>
+    `;
+    fetch('/api/issues').then(res => res.json()).then(issues => {
+        const list = document.getElementById('staffIssues');
+        list.innerHTML = issues.map(i => `<li class="list-group-item">${i.description} <button class="btn btn-success btn-sm float-end" onclick="completeIssue(${i.id})">Complete</button></li>`).join('');
+    });
+}
+
+function renderAdminDashboard() {
+    document.getElementById('dashboardContent').innerHTML = `
+        <div class="card p-4">
+            <h3>All Issues</h3>
+            <ul id="adminIssues" class="list-group"></ul>
+        </div>
+    `;
+    fetch('/api/issues').then(res => res.json()).then(issues => {
+        const list = document.getElementById('adminIssues');
+        list.innerHTML = issues.map(i => `<li class="list-group-item">${i.description} - <b>${i.status}</b></li>`).join('');
+    });
+}
+
+window.completeIssue = async function(id) {
+    await fetch(`/api/issues/${id}/complete`, {method: 'PUT'});
+    location.reload();
+};
+
+if (role === 'USER') renderUserDashboard();
+else if (role === 'STAFF') renderStaffDashboard();
+else if (role === 'ADMIN') renderAdminDashboard();
+else document.getElementById('dashboardContent').innerHTML = '<div class="alert alert-danger">Invalid role.</div>';
+</script>
+</body>
+</html>

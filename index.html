@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Helpdesk Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: linear-gradient(135deg, #6dd5ed, #2193b0); min-height: 100vh; }
+        .card {
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            animation: fadeIn 1.2s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .login-icons {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            margin-bottom: 24px;
+        }
+        .login-icon {
+            width: 64px;
+            height: 64px;
+            transition: transform 0.5s;
+            animation: bounce 1.2s infinite alternate;
+        }
+        .login-icon:hover {
+            transform: scale(1.15) rotate(-8deg);
+        }
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-16px); }
+        }
+        .btn-primary, .btn-success {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-primary:hover, .btn-success:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 16px rgba(33,147,176,0.2);
+        }
+        .navbar { background: #2193b0; }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Helpdesk</a>
+    </div>
+</nav>
+<div class="container d-flex align-items-center justify-content-center" style="min-height: 100vh;">
+    <div class="row justify-content-center w-100">
+        <div class="col-md-6">
+            <div class="card p-5 rounded-4 shadow-lg">
+                <div class="login-icons">
+                    <img src="https://cdn-icons-png.flaticon.com/512/1946/1946429.png" alt="User" class="login-icon" title="User Login">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Staff" class="login-icon" title="Staff Login">
+                    <img src="https://cdn-icons-png.flaticon.com/512/1828/1828640.png" alt="Admin" class="login-icon" title="Admin Login">
+                </div>
+                <div class="text-center mb-4">
+                    <h2 class="mt-2">Welcome to Helpdesk</h2>
+                    <p class="text-muted">Login to your account</p>
+                </div>
+                <form id="loginForm">
+                    <label class="form-label">Name</label>
+                    <input type="text" class="form-control mb-3" placeholder="Enter your name" name="name" required>
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-control mb-3" placeholder="Enter your password" name="password" required>
+                    <label class="form-label">Role</label>
+                    <select class="form-control mb-3" name="role">
+                        <option value="USER">User</option>
+                        <option value="STAFF">Staff</option>
+                        <option value="ADMIN">Admin</option>
+                    </select>
+                    <div class="mb-3 text-center">
+                        <a href="#" id="showRegister" class="link-primary">New user? Register here</a>
+                    </div>
+                    <div class="mb-3 text-center">
+                        <a href="#" id="showForgotPassword" class="link-primary">Forgot Password?</a>
+                    </div>
+                    <button class="btn btn-primary w-100 py-2">Login</button>
+                </form>
+                <hr>
+                <div class="text-center mb-2">
+                    <h5>Sign Up</h5>
+                    <p class="text-muted">Create a new account</p>
+                </div>
+                <form id="registerForm" style="display:none;">
+                    <label class="form-label">Name</label>
+                    <input type="text" class="form-control mb-3" placeholder="Enter your name" name="name" required>
+                    <label class="form-label">Department</label>
+                    <input type="text" class="form-control mb-3" placeholder="Enter your department" name="department" required>
+                    <label class="form-label">Mobile Number</label>
+                    <input type="text" class="form-control mb-3" placeholder="Enter your mobile number" name="mobile" required>
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-control mb-3" placeholder="Create a password" name="password" required>
+                    <button class="btn btn-success w-100 py-2 mb-2">Register</button>
+                    <button type="button" id="backToLogin" class="btn btn-outline-secondary w-100">Back to Login</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+document.getElementById('loginForm').onsubmit = async function(e) {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.target));
+    const res = await fetch('http://localhost:8080/api/auth/login', {
+        method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+    });
+    if (res.ok) {
+        const user = await res.json();
+        window.location.href = `/dashboard.html?role=${user.role}`;
+    } else {
+        alert('Login failed');
+    }
+};
+document.getElementById('registerForm').onsubmit = async function(e) {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.target));
+    const res = await fetch('http://localhost:8080/api/auth/register', {
+        method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+    });
+    if (res.ok) {
+        alert('Registered! Please login.');
+    } else {
+        alert('Registration failed');
+    }
+};
+document.getElementById('showRegister').onclick = function(e) {
+    e.preventDefault();
+    document.getElementById('loginForm').style.display = 'none';
+    var regForm = document.getElementById('registerForm');
+    regForm.style.display = 'block';
+    regForm.style.animation = 'fadeIn 0.8s';
+};
+document.getElementById('backToLogin').onclick = function() {
+    document.getElementById('registerForm').style.display = 'none';
+    var loginForm = document.getElementById('loginForm');
+    loginForm.style.display = 'block';
+    loginForm.style.animation = 'fadeIn 0.8s';
+};
+</script>
+
+<script>
+document.getElementById('showForgotPassword').onclick = function(e) {
+    e.preventDefault();
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('registerForm').style.display = 'none';
+    showForgotPasswordForm();
+};
+
+function showForgotPasswordForm() {
+    let container = document.querySelector('.card .container-forgot-password');
+    if (!container) {
+        container = document.createElement('div');
+        container.className = 'container-forgot-password';
+        container.innerHTML = `
+            <div class="text-center mb-4">
+                <h5>Forgot Password</h5>
+                <p class="text-muted">Enter your mobile number to get OTP</p>
+            </div>
+            <form id="forgotPasswordForm">
+                <label class="form-label">Mobile Number</label>
+                <input type="text" class="form-control mb-3" placeholder="Enter your mobile number" name="mobile" required>
+                <button class="btn btn-primary w-100 py-2 mb-2" type="submit">Send OTP</button>
+                <button type="button" id="backToLoginFromForgot" class="btn btn-outline-secondary w-100">Back to Login</button>
+            </form>
+            <form id="otpForm" style="display:none;">
+                <label class="form-label">Enter OTP</label>
+                <input type="text" class="form-control mb-3" placeholder="Enter OTP" name="otp" required>
+                <label class="form-label">New Password</label>
+                <input type="password" class="form-control mb-3" placeholder="Enter new password" name="newPassword" required>
+                <button class="btn btn-success w-100 py-2 mb-2" type="submit">Reset Password</button>
+                <button type="button" id="backToLoginFromOtp" class="btn btn-outline-secondary w-100">Back to Login</button>
+            </form>
+        `;
+        document.querySelector('.card').appendChild(container);
+
+        document.getElementById('forgotPasswordForm').onsubmit = async function(e) {
+            e.preventDefault();
+            const data = Object.fromEntries(new FormData(e.target));
+            const res = await fetch('/api/auth/forgot-password', {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+            if (res.ok) {
+                alert('OTP sent to your mobile');
+                document.getElementById('forgotPasswordForm').style.display = 'none';
+                document.getElementById('otpForm').style.display = 'block';
+            } else {
+                const error = await res.text();
+                alert('Error: ' + error);
+            }
+        };
+
+        document.getElementById('otpForm').onsubmit = async function(e) {
+            e.preventDefault();
+            const data = Object.fromEntries(new FormData(e.target));
+            const mobile = document.querySelector('#forgotPasswordForm input[name="mobile"]').value;
+            data.mobile = mobile;
+            const verifyRes = await fetch('/api/auth/verify-otp', {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({mobile: mobile, otp: data.otp})
+            });
+            if (verifyRes.ok) {
+                const resetRes = await fetch('/api/auth/reset-password', {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({mobile: mobile, otp: data.otp, newPassword: data.newPassword})
+                });
+                if (resetRes.ok) {
+                    alert('Password reset successful. Please login.');
+                    backToLogin();
+                } else {
+                    const error = await resetRes.text();
+                    alert('Reset failed: ' + error);
+                }
+            } else {
+                const error = await verifyRes.text();
+                alert('OTP verification failed: ' + error);
+            }
+        };
+
+        document.getElementById('backToLoginFromForgot').onclick = backToLogin;
+        document.getElementById('backToLoginFromOtp').onclick = backToLogin;
+    }
+    container.style.display = 'block';
+}
+
+function backToLogin() {
+    const container = document.querySelector('.container-forgot-password');
+    if (container) container.style.display = 'none';
+    document.getElementById('loginForm').style.display = 'block';
+    document.getElementById('registerForm').style.display = 'none';
+}
+</script>
+</body>
+</html>
